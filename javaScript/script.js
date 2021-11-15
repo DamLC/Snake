@@ -1,5 +1,4 @@
-window.onload = function()
-{
+window.onload = function() {
     // snake
     var skaa;
 
@@ -11,162 +10,186 @@ window.onload = function()
     var canvasHeight = 600;
     var blockSize = 30;
     var ctx;
+    var widthInBlocks = canvasWidth / blockSize;
+    var heightInBlocks = canvasHeight / blockSize;
 
     //delai for the refresh
     var delay = 100;
-    
-     init();
 
-    function init()
-    {
+    init();
+
+    function init() {
         // create the canvas
         canvas = document.createElement('canvas');
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
         canvas.style.border = "1px solid";
         document.body.appendChild(canvas);
-        
+
         //create context 
         ctx = canvas.getContext('2d');
-        skaa = new snake([[6,4],[5,4],[4,4]], "right"); //create snake
-        grany = new apple([10,10]);                     //create apple
+        skaa = new snake([
+            [6, 4],
+            [5, 4],
+            [4, 4]
+        ], "right"); //create snake
+        grany = new apple([10, 10]); //create apple
         refreshCanvas();
     }
-    
-    function refreshCanvas()
-    {                 
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        skaa.draw();    
-        skaa.forward();  
-        grany.drawApple();  
-        setTimeout(refreshCanvas,delay);
+
+    function refreshCanvas() {
+        skaa.forward();
+        if (skaa.checkCollision()) {
+            // todo GAME OVER
+        } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            skaa.draw();
+            grany.drawApple();
+            setTimeout(refreshCanvas, delay);
+        }
     }
 
     //draw one block of the body
-    function drawBlock(ctx, position)
-    {
+    function drawBlock(ctx, position) {
         var x = position[0] * blockSize;
         var y = position[1] * blockSize;
         ctx.fillRect(x, y, blockSize, blockSize);
     }
 
     // create the snake body
-    function snake(body, direction)
-    {
+    function snake(body, direction) {
         this.body = body;
         this.direction = direction;
-        this.draw = function()
-        {
+        this.draw = function() {
             ctx.save();
             ctx.fillStyle = "#FF0000";
-            for(var i = 0; i < this.body.length; i++)
-            {
-               
+            for (var i = 0; i < this.body.length; i++) {
+
                 drawBlock(ctx, this.body[i]);
             }
-            ctx.restore(); 
+            ctx.restore();
         };
         //move the snake
-        this.forward = function()
-        {
+        this.forward = function() {
             var nextPosition = this.body[0].slice();
-            switch(this.direction)
-            {
+            switch (this.direction) {
                 case "up":
                     nextPosition[1]--;
-                break;
+                    break;
 
                 case "down":
                     nextPosition[1]++;
-                break;
+                    break;
 
                 case "right":
                     nextPosition[0]++;
-                break;
+                    break;
 
                 case "left":
                     nextPosition[0]--;
-                break;
+                    break;
 
                 default:
-                    throw("invalide direction");
-            }            
+                    throw ("invalide direction");
+            }
             this.body.unshift(nextPosition); // add the new position on the array [7,4]
             this.body.pop(); // delete the last position [4,4]
         };
 
-        this.setDirection = function(newDirection)
-        {
-         var allowDirection;
+        this.setDirection = function(newDirection) {
+            var allowDirection;
 
-            switch(this.direction)
-            {
-                case "up":      
-                case "down":   
-                allowDirection = ["right", "left"];
-                break;
+            switch (this.direction) {
+                case "up":
+                case "down":
+                    allowDirection = ["right", "left"];
+                    break;
 
                 case "right":
                 case "left":
-                allowDirection = ["up", "down"];
-                break;
+                    allowDirection = ["up", "down"];
+                    break;
 
                 default:
-                    throw("invalide direction");
+                    throw ("invalide direction");
             }
-            
-            if(allowDirection.indexOf(newDirection) > -1)
-            {
+
+            if (allowDirection.indexOf(newDirection) > -1) {
                 this.direction = newDirection;
             }
+        };
+
+        this.checkCollision = function() {
+            var wallCollision = false;
+            var snakeCollision = false;
+
+            var head = this.body[0];
+            var snakeX = head[0];
+            var snakeY = head[1];
+            var snakeBody = this.body.slice(1);
+
+            var minX = 0;
+            var minY = 0;
+            var maxX = widthInBlocks - 1;
+            var maxY = heightInBlocks - 1;
+
+            var notBetweenX = snakeX < minX || snakeX > maxX;
+            var notBetweenY = snakeY < minY || snakeY > maxY;
+
+            if (notBetweenX || notBetweenY) {
+                wallCollision = true;
+            }
+
+            for (var i = 0; i < snakeBody.length; i++) {
+                if (snakeX === snakeBody[i][0] && snakeY === snakeBody[i][1]) {
+                    snakeCollision = true;
+                }
+            }
+            return wallCollision || snakeCollision;
         };
     }
 
     // create apple
-    function apple(position)
-    {
+    function apple(position) {
         this.position = position;
-        this.drawApple = function drawApple()
-        {
+        this.drawApple = function drawApple() {
             ctx.save();
             ctx.fillStyle = "#33CC33";
             ctx.beginPath();
-            var radius = blockSize/ 2;
-            var x = position[0]* blockSize + radius;
-            var y = position[1]* blockSize + radius;
-            ctx.arc(x, y, radius, 0, Math.PI*2, true);
+            var radius = blockSize / 2;
+            var x = position[0] * blockSize + radius;
+            var y = position[1] * blockSize + radius;
+            ctx.arc(x, y, radius, 0, Math.PI * 2, true);
             ctx.fill();
             ctx.restore();
         };
 
     }
 
-    document.onkeydown = function handleKeyDown(e)
-    {
+    document.onkeydown = function handleKeyDown(e) {
         var key = e.key;
         var newDirection;
 
-        switch(key)
-        {
+        switch (key) {
             case "ArrowLeft":
                 newDirection = "left";
-            break;
+                break;
 
             case "ArrowUp":
                 newDirection = "up";
-            break;
-            
+                break;
+
             case "ArrowRight":
                 newDirection = "right";
-            break;
-            
+                break;
+
             case "ArrowDown":
                 newDirection = "down";
-            break;
+                break;
 
             default:
                 return;
-            
+
         }
         skaa.setDirection(newDirection);
     }
