@@ -1,7 +1,10 @@
 window.onload = function()
 {
-    // our snake
+    // snake
     var skaa;
+
+    // apple
+    var grany;
 
     var canvas;
     var canvasWidth = 900;
@@ -25,9 +28,8 @@ window.onload = function()
         
         //create context 
         ctx = canvas.getContext('2d');
-
-        //create snake object
-        skaa = new snake([[6,4],[5,4],[4,4]], "right");
+        skaa = new snake([[6,4],[5,4],[4,4]], "right"); //create snake
+        grany = new apple([10,10]);                     //create apple
         refreshCanvas();
     }
     
@@ -35,7 +37,8 @@ window.onload = function()
     {                 
         ctx.clearRect(0,0,canvas.width,canvas.height);
         skaa.draw();    
-        skaa.forward();    
+        skaa.forward();  
+        grany.drawApple();  
         setTimeout(refreshCanvas,delay);
     }
 
@@ -55,7 +58,7 @@ window.onload = function()
         this.draw = function()
         {
             ctx.save();
-            ctx.fillStyle = "#ff0000";
+            ctx.fillStyle = "#FF0000";
             for(var i = 0; i < this.body.length; i++)
             {
                
@@ -117,6 +120,25 @@ window.onload = function()
                 this.direction = newDirection;
             }
         };
+    }
+
+    // create apple
+    function apple(position)
+    {
+        this.position = position;
+        this.drawApple = function drawApple()
+        {
+            ctx.save();
+            ctx.fillStyle = "#33CC33";
+            ctx.beginPath();
+            var radius = blockSize/ 2;
+            var x = position[0]* blockSize + radius;
+            var y = position[1]* blockSize + radius;
+            ctx.arc(x, y, radius, 0, Math.PI*2, true);
+            ctx.fill();
+            ctx.restore();
+        };
+
     }
 
     document.onkeydown = function handleKeyDown(e)
