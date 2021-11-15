@@ -20,11 +20,15 @@ window.onload = function() {
     init();
 
     function init() {
+
         // create the canvas
         canvas = document.createElement('canvas');
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-        canvas.style.border = "1px solid";
+        canvas.style.border = "30px solid";
+        canvas.style.margin = "50px auto";
+        canvas.style.display = "block";
+        canvas.style.backgroundColor = "#ddd";
         document.body.appendChild(canvas);
 
         //create context 
@@ -62,8 +66,12 @@ window.onload = function() {
 
     function gameOver() {
         ctx.save();
-        ctx.fillText("Game Over", canvasWidth / 2, canvasHeight / 2);
-        ctx.fillText("Press ENTER to restart", canvasWidth / 2, (canvasHeight / 2) + 10);
+        ctx.font = "bold 70px sans-sérif";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("Game Over", canvasWidth / 2, canvasHeight / 3);
+        ctx.font = "50px sans-sérif";
+        ctx.fillText("Press ENTER to restart", canvasWidth / 2, (canvasHeight / 2) + 100);
         ctx.restore();
     }
 
@@ -74,13 +82,17 @@ window.onload = function() {
             [4, 4]
         ], "right"); //create snake
         granySmith = new apple([10, 10]); //create apple
-        scrore = 0;
+        score = 0;
         refreshCanvas();
     }
 
     function drawScore() {
         ctx.save();
-        ctx.fillText(score.toString(), canvasWidth - 10, 10);
+        ctx.font = "bold 40px sans-sérif";
+        ctx.fillStyle = "gray";
+        ctx.textAlign = "center";
+        ctx.fillText("Apple : " +
+            score.toString(), canvasWidth - 100, 50);
         ctx.restore();
     }
 
