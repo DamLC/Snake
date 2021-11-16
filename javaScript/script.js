@@ -3,7 +3,7 @@ window.onload = function() {
     var skaa;
 
     // apple
-    var grany;
+    var granySmith;
 
     var canvas;
     var canvasWidth = 900;
@@ -12,6 +12,7 @@ window.onload = function() {
     var ctx;
     var widthInBlocks = canvasWidth / blockSize;
     var heightInBlocks = canvasHeight / blockSize;
+    var score;
 
     //delai for the refresh
     var delay = 100;
@@ -19,11 +20,17 @@ window.onload = function() {
     init();
 
     function init() {
+
         // create the canvas
         canvas = document.createElement('canvas');
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-        canvas.style.border = "1px solid";
+        canvas.style.border = "30px solid";
+        canvas.style.borderRadius = "10px";
+        canvas.style.margin = "50px auto";
+        canvas.style.display = "block";
+        canvas.style.backgroundColor = "#ddd";
+
         document.body.appendChild(canvas);
 
         //create context 
@@ -33,26 +40,62 @@ window.onload = function() {
             [5, 4],
             [4, 4]
         ], "right"); //create snake
-        grany = new apple([10, 10]); //create apple
+        granySmith = new apple([10, 10]); //create apple
+        score = 0;
         refreshCanvas();
     }
 
     function refreshCanvas() {
         skaa.forward();
         if (skaa.checkCollision()) {
-            // todo GAME OVER
+            gameOver();
         } else {
-            if (skaa.eatingApple(grany)) {
+            if (skaa.eatingApple(granySmith)) {
+                score++;
+                skaa.ateApple = true;
                 do {
-                    grany.setNewPosition();
+                    granySmith.setNewPosition();
                 }
-                while (grany.isOnSnake(skaa))
+                while (granySmith.isOnSnake(skaa))
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             skaa.draw();
-            grany.drawApple();
+            granySmith.drawApple();
+            drawScore();
             setTimeout(refreshCanvas, delay);
         }
+    }
+
+    function gameOver() {
+        ctx.save();
+        ctx.font = "bold 70px sans-sérif";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("Game Over", canvasWidth / 2, canvasHeight / 3);
+        ctx.font = "50px sans-sérif";
+        ctx.fillText("Press ENTER to restart", canvasWidth / 2, (canvasHeight / 2) + 100);
+        ctx.restore();
+    }
+
+    function restart() {
+        skaa = new snake([
+            [6, 4],
+            [5, 4],
+            [4, 4]
+        ], "right"); //create snake
+        granySmith = new apple([10, 10]); //create apple
+        score = 0;
+        refreshCanvas();
+    }
+
+    function drawScore() {
+        ctx.save();
+        ctx.font = "bold 40px sans-sérif";
+        ctx.fillStyle = "gray";
+        ctx.textAlign = "center";
+        ctx.fillText("Apple : " +
+            score.toString(), canvasWidth - 100, 50);
+        ctx.restore();
     }
 
     //draw one block of the body
@@ -66,6 +109,7 @@ window.onload = function() {
     function snake(body, direction) {
         this.body = body;
         this.direction = direction;
+        this.ateApple = false;
         this.draw = function() {
             ctx.save();
             ctx.fillStyle = "#FF0000";
@@ -99,7 +143,11 @@ window.onload = function() {
                     throw ("invalide direction");
             }
             this.body.unshift(nextPosition); // add the new position on the array [7,4]
-            this.body.pop(); // delete the last position [4,4]
+
+            if (!this.ateApple)
+                this.body.pop(); // delete the last position [4,4]
+            else
+                this.ateApple = false;
         };
 
         this.setDirection = function(newDirection) {
@@ -181,8 +229,8 @@ window.onload = function() {
         };
 
         this.setNewPosition = function() {
-            var newX = Math.round(Math.random * (widthInBlocks - 1));
-            var newY = Math.round(Math.random * (widthInBlocks - 1));
+            var newX = Math.round(Math.random() * (widthInBlocks - 1));
+            var newY = Math.round(Math.random() * (heightInBlocks - 1));
             this.position = [newX, newY];
         };
 
@@ -190,7 +238,7 @@ window.onload = function() {
             var isOnSnake = false;
 
             for (var i = 0; i < snakeToCheck.body.length; i++) {
-                if (this.position[0] === snakeToCheck.body[i][0] && this.position[1 === snakeToCheck.body[i][1]])
+                if (this.position[0] === snakeToCheck.body[i][0] && this.position[1] === snakeToCheck.body[i][1])
                     isOnSnake = true;
             }
             return isOnSnake;
@@ -218,7 +266,8 @@ window.onload = function() {
             case "ArrowDown":
                 newDirection = "down";
                 break;
-
+            case "Enter":
+                restart();
             default:
                 return;
 
