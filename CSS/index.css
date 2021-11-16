@@ -1,0 +1,46 @@
+body {
+    box-sizing: border-box;
+    background-color: rgb(245, 236, 155);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+h1 {
+    text-shadow: 2px 2px 5px red;
+}
+
+.snake img {
+    border-radius: 10px;
+    width: 5em;
+    height: 5em;
+    float: left;
+    margin-left: 10em;
+    margin-top: 2em;
+}
+
+.apple img {
+    border-radius: 10px;
+    width: 5em;
+    height: 5em;
+    float: right;
+    margin-right: 10em;
+    margin-top: 2em;
+}
+
+.body {
+    text-align: center;
+    font-style: italic;
+    border-radius: 10px;
+    border-style: solid;
+    background-color: #ddd;
+    width: 50em;
+    margin-left: 25%;
+}
+
+h2 {
+    text-decoration: underline;
+}
