@@ -26,9 +26,11 @@ window.onload = function() {
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
         canvas.style.border = "30px solid";
+        canvas.style.borderRadius = "10px";
         canvas.style.margin = "50px auto";
         canvas.style.display = "block";
         canvas.style.backgroundColor = "#ddd";
+
         document.body.appendChild(canvas);
 
         //create context 
